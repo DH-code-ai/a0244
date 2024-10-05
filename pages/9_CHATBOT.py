@@ -1,6 +1,6 @@
 import streamlit as st
 import google.generativeai as genai
-API_KEY = "AIzaSyAtevuEL8Ge_D4AoBhu6oMbRVYG0o-xeuE" 
+API_KEY = "your_API_KEY" 
 genai.configure(api_key=API_KEY)
 st.set_page_config(page_title="Chatbot", page_icon="🤖")
 st.title("Chat with Chatbot")
