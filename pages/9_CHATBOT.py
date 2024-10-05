@@ -1,49 +1,28 @@
 import streamlit as st
 import google.generativeai as genai
-
-# Configure the Gemini API (replace with your actual API key)
-genai.configure(api_key='AIzaSyBJU_x6Vn3crT-lpx6-QRrNrJxsEeJTbSw')
-
-# Set up the model
-model = genai.GenerativeModel('gemini-pro')
-
-# Initialize chat history
+API_KEY = "AIzaSyAtevuEL8Ge_D4AoBhu6oMbRVYG0o-xeuE" 
+genai.configure(api_key=API_KEY)
+st.set_page_config(page_title="Chatbot", page_icon="🤖")
+st.title("Chat with Chatbot")
 if "messages" not in st.session_state:
     st.session_state.messages = []
-
-# Streamlit app
-st.title("Gemini Chatbot")
-
-# Display chat messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-
-# User input
+def generate_gemini_response(prompt):
+    model = genai.GenerativeModel('gemini-pro')
+    response = model.generate_content(prompt)
+    return response.text
 if prompt := st.chat_input("What would you like to know?"):
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    
-    # Display user message
     with st.chat_message("user"):
         st.markdown(prompt)
-    
-    # Generate Gemini response
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
-        
-        # Stream response from the model
-        for chunk in model.generate_content(prompt, stream=True):
-            full_response += chunk.text  # Access the text attribute directly
-            message_placeholder.markdown(full_response + "▌")
-        
-        message_placeholder.markdown(full_response)
-    
-    # Add assistant response to chat history
+        try:
+            full_response = generate_gemini_response(prompt)
+            message_placeholder.markdown(full_response)
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")
+            st.stop()
     st.session_state.messages.append({"role": "assistant", "content": full_response})
-
-# Sidebar with information
-st.sidebar.title("About")
-st.sidebar.info("This is a Gemini chatbot powered by Streamlit.")
-st.sidebar.warning("Please note: You need to replace the placeholder API key with your actual Gemini API key.")
